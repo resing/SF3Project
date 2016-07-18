@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Services list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Datestart</th>
+                <th>Dateend</th>
+                <th>Description</th>
+                <th>Created</th>
+                <th>Updated</th>
+                <th>Slug</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for service in services %}
+            <tr>
+                <td><a href="{{ path('admin_services_show', { 'id': service.id }) }}">{{ service.id }}</a></td>
+                <td>{{ service.name }}</td>
+                <td>{% if service.status %}Yes{% else %}No{% endif %}</td>
+                <td>{% if service.dateStart %}{{ service.dateStart|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{% if service.dateEnd %}{{ service.dateEnd|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{{ service.description }}</td>
+                <td>{% if service.created %}{{ service.created|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{% if service.updated %}{{ service.updated|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{{ service.slug }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('admin_services_show', { 'id': service.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('admin_services_edit', { 'id': service.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('admin_services_new') }}">Create a new entry</a>
+        </li>
+    </ul>
+{% endblock %}

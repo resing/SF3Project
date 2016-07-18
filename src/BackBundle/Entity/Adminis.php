@@ -1,0 +1,278 @@
+<?php
+
+namespace BackBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
+
+/**
+ * Adminis
+ *
+ * @ORM\Table(name="adminis")
+ * @ORM\Entity(repositoryClass="BackBundle\Repository\AdminisRepository")
+ * @ORM\HasLifecycleCallbacks
+ */
+class Adminis
+{
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="quantity", type="integer")
+     */
+    private $quantity;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=255)
+     * @Assert\NotBlank
+     */
+    private $name;
+    /**
+     * @ORM\ManyToOne(targetEntity="UtilisateursBundle\Entity\Utilisateurs", inversedBy="administrations")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $utilisateur;
+    /**
+    * @ORM\ManyToOne(targetEntity="BackBundle\Entity\Services", inversedBy="administrations")
+    * @ORM\JoinColumn(nullable=true)
+    */
+    private $service;
+    /**
+     * @ORM\ManyToOne(targetEntity="BackBundle\Entity\Status", inversedBy="administrations")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $status;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    public $path;
+   
+    public $file;
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set quantity
+     *
+     * @param integer $quantity
+     *
+     * @return Adminis
+     */
+    public function setQuantity($quantity)
+    {
+        $this->quantity = $quantity;
+
+        return $this;
+    }
+
+    /**
+     * Get quantity
+     *
+     * @return int
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     *
+     * @return Adminis
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set utilisateur
+     *
+     * @param \UtilisateursBundle\Entity\Utilisateurs $utilisateur
+     *
+     * @return Adminis
+     */
+    public function setUtilisateur(\UtilisateursBundle\Entity\Utilisateurs $utilisateur)
+    {
+        $this->utilisateur = $utilisateur;
+
+        return $this;
+    }
+
+    /**
+     * Get utilisateur
+     *
+     * @return \UtilisateursBundle\Entity\Utilisateurs
+     */
+    public function getUtilisateur()
+    {
+        return $this->utilisateur;
+    }
+
+    /**
+     * Set service
+     *
+     * @param \BackBundle\Entity\Services $service
+     *
+     * @return Adminis
+     */
+    public function setService(\BackBundle\Entity\Services $service = null)
+    {
+        $this->service = $service;
+
+        return $this;
+    }
+    /**
+     * Get service
+     *
+     * @return \BackBundle\Entity\Services
+     */
+    public function getService()
+    {
+        return $this->service;
+    }
+    /**
+     * Set path
+     *
+     * @param string $path
+     *
+     * @return Adminis
+     */
+    public function setPath($path)
+    {
+        $this->path = $path;
+
+        return $this;
+    }
+    /**
+     * Get path
+     *
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+    protected function getUploadRootDir()
+    {
+        return __DIR__.'../../../../web/uploads';
+    }
+    public function getAbsolutePath()
+    {
+
+        return null === $this->path ? null : $this->getUploadRootDir().'/'.$this->path;
+    }
+
+    /**
+     * @ORM\PostLoad()
+     */
+    public function postLoad()
+    {
+        $this->updated = new \DateTime();
+    }
+    /**
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
+     */
+    public function preUpload()
+    {
+
+        $this->tempFile = $this->getAbsolutePath();
+        $this->oldFile  = $this->getPath();
+        $this->updated = new \DateTime();
+        if (null !== $this->file) {
+            $this->path = sha1(uniqid(mt_rand(), true)).'.'.$this->file->guessExtension();
+
+        }
+    }
+    public function getAssetPath()
+    {
+        return 'uploads/'.$this->path;
+    }
+    /**
+     * @ORM\PostPersist()
+     * @ORM\PostUpdate()
+     */
+    public function upload()
+    {
+        if (null !== $this->file) {
+
+            $this->file->move($this->getUploadRootDir(), $this->path);
+            unset($this->file);
+            if($this->oldFile != null ) unlink ($this->tempFile);
+        }
+    }
+    /**
+     * @ORM\PreRemove()
+     */
+    public function preRemoveUpload()
+    {
+        $this->tempFile = $this->getAbsolutePath();
+    }
+
+    /**
+     * @ORM\PostRemove()
+     */
+    public function removeUpload()
+    {
+
+        if(file_exists($this->tempFile)) unlink ($this->tempFile);
+
+    }
+
+    /**
+     * Set status
+     *
+     * @param \BackBundle\Entity\Status $status
+     *
+     * @return Adminis
+     */
+    public function setStatus(\BackBundle\Entity\Status $status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return \BackBundle\Entity\Status
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+}

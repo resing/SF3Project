@@ -1,0 +1,30 @@
+{# empty Twig template #}
+{# empty Twig template #}
+{% extends 'layout.html.twig' %}
+ {% block header %}
+	<div class="main-banner banner text-center">
+    <div class="container">
+            <h1>Sell or Advertise   <span class="segment-heading">    anything online </span> with Resale</h1>
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
+            <a href="post-ad.html">Post Free Ad</a>
+	  </div>
+	</div>
+ {% endblock %}
+{% block body %}
+    <div class="categories">
+      <div class="container">
+        {% for family in familys %}
+        <div class="col-md-2 focus-grid">
+          <a href="{{path ('services',{'slug':family.slug}) }}">
+            <div class="focus-border">
+              <div class="focus-layout">
+                <div class="focus-image"><i class=""></i></div>
+                 <h4 class="clrchg">{{ family.name }}</h4>
+              </div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+ {% endblock %}

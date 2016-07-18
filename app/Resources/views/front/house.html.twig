@@ -1,0 +1,38 @@
+{% extends 'layout.html.twig' %}
+{% block header %}
+	<div class="banner text-center">
+		<div class="container">
+			<h1>Sell or Advertise   <span class="segment-heading">    anything online </span> with Resale</h1>
+			<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
+			<a href="post-ad.html">Post Free Ad</a>
+		</div>
+	</div>
+{% endblock %}
+ {% block body %}
+	 <div class="container">
+		 <h2 class="head">Post an Ad</h2>
+	 {% for flash_message in app.session.flashBag.get('notice') %}
+		 {{ flash_message }}
+	 {% endfor %}
+		 <div class="post-ad-form">
+			     {{ form_start(form, {'action': path('addhome',{'service' : service.id }), 'method': 'POST'}) }}
+			     {{ form_row(form._token) }}
+				 <div class="clearfix"></div>
+				 <label>Quantité <span>*</span></label>
+			     {{ form_errors(form.quantity) }}
+			     {{ form_widget(form.quantity, {'attr':{'class':'phone','placeholder':'test'}})}}
+				 <div class="clearfix"></div>
+				 <label>Couleur <span>*</span></label>
+			     {{ form_errors(form.couleur) }}
+			     {{ form_widget(form.couleur, {'attr':{'class':'phone','placeholder':'Write few lines about your product'}})}}
+				 <div class="clearfix"></div>
+				 <label>Nature <span>*</span></label>
+				 {{ form_errors(form.nature) }}
+				 {{ form_widget(form.nature, {'attr':{'class':'phone','placeholder':'Write few lines about your product'}})}}
+				 <div class="clearfix"></div>
+			 <input type="hidden" value="{{service.id}}"  name="service"/>
+			 <input type="submit" value="Submit Comment">
+			 {{ form_end(form) }}
+		 </div>
+	 </div>
+ {% endblock %}
